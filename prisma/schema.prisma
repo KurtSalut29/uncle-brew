@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STAFF)
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Product {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  description   String?
+  price         Float
+  stock         Int
+  category      String         @default("Milk Tea")
+  imageUrl      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  inventoryLogs InventoryLog[]
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  totalAmount Float
+  createdAt   DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  subtotal  Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model InventoryLog {
+  id             String   @id @default(cuid())
+  productId      String
+  quantityChange Int
+  reason         String
+  date           DateTime @default(now())
+  product        Product  @relation(fields: [productId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  name      String
+  message   String
+  rating    Int
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
