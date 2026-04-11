@@ -5,8 +5,13 @@
   box-sizing: border-box;
 }
 
-html, body {
-  overflow-x: hidden;
+html {
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%;
+}
+body {
+  overflow-x: clip;
   width: 100%;
   max-width: 100%;
 }

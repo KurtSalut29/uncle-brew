@@ -34,8 +34,8 @@ export default function CategoryBar({ categories }: { categories: string[] }) {
 
   return (
     <div style={{ background: "#F5F0E8", borderBottom: "1px solid #E8E4DC", position: "sticky", top: "64px", zIndex: 40 }}>
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
-        <span className="text-xs font-black uppercase tracking-widest mr-2" style={{ color: "#C4B5A0" }}>BROWSE</span>
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: "touch", paddingLeft: "16px", paddingRight: "16px" }}>
+        <span className="text-xs font-black uppercase tracking-widest mr-2" style={{ color: "#C4B5A0", flexShrink: 0, whiteSpace: "nowrap" }}>BROWSE</span>
         {categories.map((cat) => {
           const isActive = active === cat;
           return (
@@ -48,6 +48,8 @@ export default function CategoryBar({ categories }: { categories: string[] }) {
                 color: "#FAFAF8",
                 border: `1px solid ${isActive ? "#92694A" : "#1C1917"}`,
                 transform: isActive ? "scale(1.05)" : "scale(1)",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
               }}
             >
               {cat}

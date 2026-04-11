@@ -38,7 +38,7 @@ export default async function LandingPage() {
     <div className="min-h-screen flex flex-col" style={{ background: "#FAFAF8", fontFamily: "'Inter', sans-serif" }}>
 
       {/* ── Navbar ── */}
-      <nav style={{ background: "rgba(250,250,248,0.90)", backdropFilter: "blur(16px)", borderBottom: "1px solid #E8E4DC", position: "sticky", top: 0, zIndex: 50 }}>
+      <nav style={{ background: "rgba(250,250,248,0.90)", backdropFilter: "blur(16px)", borderBottom: "1px solid #E8E4DC", position: "sticky", top: 0, zIndex: 40 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <img src="/uploads/logo.png" alt="Uncle Brew" style={{ height: "36px", width: "auto" }} />
           <div className="hidden md:flex items-center gap-8">
@@ -244,7 +244,8 @@ export default async function LandingPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {/* Mobile: horizontal scroll row — Desktop: grid */}
+              <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {products.filter((p) => p.category === cat).map((p, i) => (
                   <div key={p.id} className={`menu-card group rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 anim-scale-in anim-delay-${Math.min(i + 1, 6)}`}
                     style={{ background: "#FFFFFF", border: "1px solid #E8E4DC" }}>
@@ -272,6 +273,35 @@ export default async function LandingPage() {
                         </span>
                         <span className="text-xs font-bold" style={{ color: "#D97706" }}>Order at counter →</span>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile horizontal scroll */}
+              <div className="flex sm:hidden gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}>
+                {products.filter((p) => p.category === cat).map((p) => (
+                  <div key={p.id} className="menu-card group rounded-2xl overflow-hidden flex-shrink-0 transition-all duration-300"
+                    style={{ background: "#FFFFFF", border: "1px solid #E8E4DC", width: "160px", scrollSnapAlign: "start" }}>
+                    <div className="relative overflow-hidden" style={{ height: "120px", background: "#F5F0E8" }}>
+                      {p.imageUrl
+                        ? <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center">
+                            <img src="/uploads/logo.png" alt="Uncle Brew" className="h-12 w-auto object-contain opacity-50" />
+                          </div>
+                      }
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-black"
+                        style={{ background: "#1C1917", color: "#FCD34D" }}>
+                        ₱{p.price.toFixed(0)}
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <p className="font-black text-xs leading-tight" style={{ color: "#1C1917" }}>{p.name}</p>
+                      {p.description
+                        ? <p className="text-xs mt-1 line-clamp-2 leading-relaxed" style={{ color: "#A8A29E" }}>{p.description}</p>
+                        : <p className="text-xs mt-1" style={{ color: "#D4CFC8" }}>Fresh to order</p>
+                      }
+                      <p className="text-xs font-bold mt-2" style={{ color: "#D97706" }}>At counter →</p>
                     </div>
                   </div>
                 ))}

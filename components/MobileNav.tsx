@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { SmoothScrollLink } from "./SmoothScrollLink";
 
@@ -41,91 +42,20 @@ export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    const html = document.documentElement;
-    if (open) {
-      const scrollY = window.scrollY;
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      html.style.overflow = "hidden";
-    } else {
-      const scrollY = document.body.style.top;
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      html.style.overflow = "";
-      if (scrollY) window.scrollTo(0, parseInt(scrollY || "0") * -1);
-    }
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      html.style.overflow = "";
-    };
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  return (
-    <div className="md:hidden">
-
-      {/* Hamburger button */}
-      <button
-        onClick={() => setOpen(!open)}
-        aria-label="Toggle menu"
-        style={{
-          position: "relative",
-          width: "42px", height: "42px",
-          borderRadius: "14px",
-          background: open ? "#1C1917" : "transparent",
-          border: `1.5px solid ${open ? "rgba(252,211,77,0.3)" : "#E8E4DC"}`,
-          display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center",
-          gap: "5px", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-          cursor: "pointer", overflow: "hidden",
-        }}
-      >
-        {/* Glow on open */}
-        <span style={{
-          position: "absolute", inset: 0, borderRadius: "14px",
-          background: "radial-gradient(circle at center, rgba(252,211,77,0.08) 0%, transparent 70%)",
-          opacity: open ? 1 : 0, transition: "opacity 0.3s",
-        }} />
-        <span style={{
-          background: open ? "#FCD34D" : "#1C1917",
-          height: "1.5px", width: open ? "20px" : "20px",
-          borderRadius: "2px", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-          transform: open ? "rotate(45deg) translateY(4.5px) translateX(1.5px)" : "none",
-          display: "block", position: "relative",
-        }} />
-        <span style={{
-          background: open ? "#FCD34D" : "#1C1917",
-          height: "1.5px", width: "14px",
-          borderRadius: "2px", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-          opacity: open ? 0 : 1,
-          transform: open ? "translateX(10px)" : "none",
-          display: "block", alignSelf: "flex-start", marginLeft: "11px", position: "relative",
-        }} />
-        <span style={{
-          background: open ? "#FCD34D" : "#1C1917",
-          height: "1.5px", width: open ? "20px" : "20px",
-          borderRadius: "2px", transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-          transform: open ? "rotate(-45deg) translateY(-4.5px) translateX(1.5px)" : "none",
-          display: "block", position: "relative",
-        }} />
-      </button>
-
+  const overlay = (
+    <>
       {/* Backdrop */}
       <div
         onClick={() => setOpen(false)}
         style={{
-          position: "fixed", top: 0, right: 0, bottom: 0, left: 0, zIndex: 90,
+          position: "fixed", top: 0, right: 0, bottom: 0, left: 0, zIndex: 9990,
           background: "rgba(10,8,7,0.75)",
           backdropFilter: "blur(6px)",
           WebkitBackdropFilter: "blur(6px)",
@@ -138,7 +68,7 @@ export default function MobileNav() {
       {/* Drawer */}
       <div
         style={{
-          position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 95,
+          position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 9995,
           width: "280px", maxWidth: "85vw",
           background: "linear-gradient(160deg, #C9A87C 0%, #B8956A 60%, #A8845A 100%)",
           borderLeft: "1px solid rgba(255,255,255,0.2)",
@@ -279,9 +209,73 @@ export default function MobileNav() {
             </div>
           </div>
         </nav>
-
-
       </div>
+    </>
+  );
+
+  return (
+    <div className="md:hidden">
+
+      {/* Hamburger button */}
+      <button
+        onClick={() => setOpen(!open)}
+        aria-label="Toggle menu"
+        style={{
+          width: "40px", height: "40px",
+          borderRadius: "12px",
+          background: open ? "#1C1917" : "#F5F0E8",
+          border: `1.5px solid ${open ? "rgba(252,211,77,0.25)" : "#E8E4DC"}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer",
+          transition: "all 0.25s ease",
+          flexShrink: 0,
+        }}
+      >
+        <svg
+          width="18" height="18"
+          viewBox="0 0 18 18"
+          fill="none"
+          style={{ overflow: "visible" }}
+        >
+          {/* Top line → rotates to \ */}
+          <line
+            x1="2" y1="5" x2="16" y2="5"
+            stroke={open ? "#FCD34D" : "#1C1917"}
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            style={{
+              transformOrigin: "9px 5px",
+              transform: open ? "rotate(45deg) translateY(4px)" : "none",
+              transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1), stroke 0.25s",
+            }}
+          />
+          {/* Middle line → fades out */}
+          <line
+            x1="4" y1="9" x2="16" y2="9"
+            stroke={open ? "#FCD34D" : "#1C1917"}
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            style={{
+              opacity: open ? 0 : 1,
+              transition: "opacity 0.2s ease, stroke 0.25s",
+            }}
+          />
+          {/* Bottom line → rotates to / */}
+          <line
+            x1="2" y1="13" x2="16" y2="13"
+            stroke={open ? "#FCD34D" : "#1C1917"}
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            style={{
+              transformOrigin: "9px 13px",
+              transform: open ? "rotate(-45deg) translateY(-4px)" : "none",
+              transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1), stroke 0.25s",
+            }}
+          />
+        </svg>
+      </button>
+
+      {mounted && createPortal(overlay, document.body)}
     </div>
   );
 }
